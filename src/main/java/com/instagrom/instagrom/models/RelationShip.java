@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,11 +25,13 @@ public class RelationShip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
-    private long followerId;
+    @ManyToOne
+    @JoinColumn(name = "follower_id", unique = false, referencedColumnName = "id")
+    private User follower;
 
-    @Column
-    private long followingId;
+    @ManyToOne
+    @JoinColumn(name = "following_id", unique = false, referencedColumnName = "id")
+    private User following;
 
     @Column
     private RelationStatus status;
@@ -41,9 +45,9 @@ public class RelationShip {
     public RelationShip() {
     }
 
-    public RelationShip(long followerId, long followingId) {
-        this.followerId = followerId;
-        this.followingId = followingId;
+    public RelationShip(User follower, User following) {
+        this.follower = follower;
+        this.following = following;
     }
     
 }

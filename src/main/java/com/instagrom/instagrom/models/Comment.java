@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +29,9 @@ public class Comment {
     @Column
     private long postId;
 
-    @Column
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", unique = false, referencedColumnName = "id")
+    private User user;
     
     @Column
     private Date createdAt;
@@ -39,10 +42,10 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(String text, long postId, long userId) {
+    public Comment(String text, long postId, User user) {
         this.text = text;
         this.postId = postId;
-        this.userId = userId;
+        this.user = user;
     }
 
 }

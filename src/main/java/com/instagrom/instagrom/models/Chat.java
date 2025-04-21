@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,11 +23,13 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column
-    private long senderId;
+    @ManyToOne
+    @JoinColumn(name = "sender_id", unique = false, referencedColumnName = "id")
+    private User sender;
 
-    @Column
-    private long receiverId;
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", unique = false, referencedColumnName = "id")
+    private User receiver;
 
     @Column
     private String message;
@@ -48,9 +52,9 @@ public class Chat {
     public Chat() {
     }
     
-    public Chat(long senderId, long receiverId, String message) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+    public Chat(User sender, User receiver, String message) {
+        this.sender = sender;
+        this.receiver = receiver;
         this.message = message;
     }
 
