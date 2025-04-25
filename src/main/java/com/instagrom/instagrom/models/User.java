@@ -41,6 +41,9 @@ public class User {
     @Column
     private Date updatedAt;
 
+    @Column
+    private Date deletedAt;
+
     public User() {
     }
 

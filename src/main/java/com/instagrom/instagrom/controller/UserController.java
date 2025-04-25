@@ -3,6 +3,7 @@ package com.instagrom.instagrom.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.naming.AuthenticationException;
 
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -124,6 +127,47 @@ public class UserController {
         var responseData = new GeneralResponse<Long>();
         responseData.setTitle("The user was created");
         responseData.setMessage(String.format("The user was created with id %s", userId));
+        responseData.setData(userId);
+        return new ResponseEntity<>(responseData, HttpStatus.CREATED);
+    }
+    
+    @Operation(summary = "Update the user information", description = "Update the user information with the given properties.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The user was updated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "422", description = "The properties of the user are not valid.")
+    })
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody NewUserRequest userUpdate) {
+        
+        // * request required
+        Map<String, String> rules = new HashMap<>();
+            rules.put("name", "required");
+            rules.put("email", "required|email");
+
+        // * validate the request
+        List<String> errors = RequestValidator.validate(userUpdate, rules);
+        if (!errors.isEmpty()) {
+            var responseData = new GeneralResponse<>();
+            responseData.setTitle("Missing required parameter(s)");
+            responseData.setMessage("BAD REQUEST");
+            responseData.setData(errors);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(responseData);
+        }
+
+        // * update the user
+        long userId = 0;
+        try {
+            userId = this.userService.updateUser(id, userUpdate);
+        } catch (NoSuchElementException de) {
+            var errorData = new HashMap<String, Object>();
+            errorData.put("Id", "The id is invalid");
+            return ResponseEntity.unprocessableEntity().body(errorData);
+        }
+
+        // * return the userId
+        var responseData = new GeneralResponse<Long>();
+        responseData.setTitle("The user was updated");
+        responseData.setMessage(String.format("The user was updated with id %s", userId));
         responseData.setData(userId);
         return new ResponseEntity<>(responseData, HttpStatus.CREATED);
     }

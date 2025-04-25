@@ -1,6 +1,7 @@
 package com.instagrom.instagrom.services.User;
 
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -81,7 +82,7 @@ public class MockUserService implements UserService {
 
         try {
             Instant instant = LocalDateTime.now().toInstant(ZoneOffset.of("-06:00"));
-            Date date = Date.from(instant);
+            Date CreationDate = Date.from(instant);
 
             // * create the user and save
             var user = new User();
@@ -89,8 +90,8 @@ public class MockUserService implements UserService {
             user.setEmail(newUser.getEmail());
             user.setUsername(newUser.getUsername());
             user.setPassword(passwordEncode);
-            user.setCreatedAt(date);
-            user.setUpdatedAt(date);
+            user.setCreatedAt(CreationDate);
+            user.setUpdatedAt(CreationDate);
 
             userRepository.saveAndFlush(user);
             
@@ -100,6 +101,50 @@ public class MockUserService implements UserService {
             throw new RuntimeException("Fail at stored the new user", e);
         }
 
+    }
+
+    @Override
+    public long updateUser(long userId, NewUserRequest userUpdate) {
+        Instant instant = LocalDateTime.now().toInstant(ZoneOffset.of("-06:00"));
+        Date NewDate = Date.from(instant);
+
+        // * validate if the id exist
+        User existingUser = userRepository.findById(userId).get();
+        if(existingUser == null){
+            throw new NoSuchElementException("The id is invalid");
+        }
+        
+        // * update the user model and save
+        existingUser.setName(userUpdate.getName());
+        existingUser.setEmail(userUpdate.getEmail());
+        existingUser.setUpdatedAt(NewDate);
+
+        userRepository.save(existingUser);
+
+        return userId;
+    }
+
+    @Override
+    public long deleteUser(long userId) {
+        Instant instant = LocalDateTime.now().toInstant(ZoneOffset.of("-06:00"));
+        Date DeleteDate = Date.from(instant);
+
+        // * validate if the id exist
+        User existingUser = userRepository.findById(userId).get();
+        if(existingUser == null){
+            throw new NoSuchElementException("The id is invalid");
+        }
+
+        if(existingUser.getDeletedAt() != null){
+            throw new IllegalArgumentException("The user is already deleted");
+        }
+        
+        // * soft delete the user and save
+        existingUser.setUpdatedAt(DeleteDate);
+        existingUser.setDeletedAt(DeleteDate);
+        userRepository.save(existingUser);
+
+        return userId;
     }
 
 }

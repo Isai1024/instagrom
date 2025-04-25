@@ -1,5 +1,7 @@
 package com.instagrom.instagrom.services.User;
 
+import java.util.NoSuchElementException;
+
 import javax.naming.AuthenticationException;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -28,6 +30,25 @@ public interface UserService {
      */
     long createUser(NewUserRequest newUser) throws DuplicateKeyException;
     
+    /**
+     * Update a user and return the user id
+     * 
+     * @param userId
+     * @param userUpdate properties used to update the user
+     * @return the id of the user
+     * @throws NoSuchElementException the id is invalid
+     */
+    long updateUser(long userId, NewUserRequest userUpdate);
+
+    /**
+     * Update a user and return the user id
+     * 
+     * @param userId
+     * @return the id of the user
+     * @throws NoSuchElementException the id is invalid
+     */
+    long deleteUser(long userId);
+
     /**
      * Get the user stored on the db
      * 
