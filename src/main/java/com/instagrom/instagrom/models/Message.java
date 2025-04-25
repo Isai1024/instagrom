@@ -16,23 +16,28 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "comments")
-public class Comment {
+@Table(name = "mesages")
+public class Message {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
-    private String text;
-
-    @ManyToOne
-    @JoinColumn(name = "post_id", unique = false, referencedColumnName = "id")
-    private Post post;
-
     @ManyToOne
     @JoinColumn(name = "user_id", unique = false, referencedColumnName = "id")
     private User user;
+
+    @Column
+    private String message;
+
+    @Column
+    private boolean isRead;
+
+    @Column
+    private boolean isVisible;
+
+    @Column
+    private long imagePostId;
     
     @Column
     private Date createdAt;
@@ -40,13 +45,15 @@ public class Comment {
     @Column
     private Date updatedAt;
 
-    public Comment() {
+    public Message() {
     }
-
-    public Comment(String text, Post post, User user) {
-        this.text = text;
-        this.post = post;
+    
+    public Message(User user, String message, boolean isRead, boolean isVisible, long imagePostId) {
         this.user = user;
+        this.message = message;
+        this.isRead = isRead;
+        this.isVisible = isVisible;
+        this.imagePostId = imagePostId;
     }
 
 }
