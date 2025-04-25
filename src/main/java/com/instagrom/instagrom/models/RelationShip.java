@@ -2,8 +2,6 @@ package com.instagrom.instagrom.models;
 
 import java.sql.Date;
 
-import com.instagrom.instagrom.models.util.RelationStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +32,7 @@ public class RelationShip {
     private User following;
 
     @Column
-    private RelationStatus status;
+    private long status;
     
     @Column
     private Date createdAt;
