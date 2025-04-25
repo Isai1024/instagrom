@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -168,6 +169,36 @@ public class UserController {
         var responseData = new GeneralResponse<Long>();
         responseData.setTitle("The user was updated");
         responseData.setMessage(String.format("The user was updated with id %s", userId));
+        responseData.setData(userId);
+        return new ResponseEntity<>(responseData, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Delete the user information with SoftDelete", description = "Delete the user information with SoftDelete.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The user was deleted", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "422", description = "The properties of the user are not valid.")
+    })
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Object> deleteUser(@PathVariable Long id) throws NoSuchElementException{
+        
+        // * delete the user
+        long userId = 0;
+        try {
+            userId = this.userService.deleteUser(id);
+        } catch (NoSuchElementException de) {
+            var errorData = new HashMap<String, Object>();
+            errorData.put("Id", "The id is invalid");
+            return ResponseEntity.unprocessableEntity().body(errorData);
+        } catch (IllegalArgumentException ex) {
+            var errorData = new HashMap<String, Object>();
+            errorData.put("User", "The user is already deleted");
+            return ResponseEntity.unprocessableEntity().body(errorData);
+        }
+
+        // * return the userId
+        var responseData = new GeneralResponse<Long>();
+        responseData.setTitle("The user was deleted");
+        responseData.setMessage(String.format("The user was deleted with id %s", userId));
         responseData.setData(userId);
         return new ResponseEntity<>(responseData, HttpStatus.CREATED);
     }
