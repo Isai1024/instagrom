@@ -25,7 +25,9 @@ public class JWTUtil {
                 .withSubject(user.getName())
                 .withClaim("userId", user.getId())
                 .withClaim("name", user.getName())
+                .withClaim("username", user.getUsername())
                 .withClaim("email", user.getEmail())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
                 .withIssuedAt(new Date())
                 .withIssuer(issuer);
 
