@@ -1,14 +1,18 @@
 package com.instagrom.instagrom.models;
 
-import java.sql.Date;
+import java.util.Date;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,9 +36,8 @@ public class Post {
     @Column
     private String caption;
 
-    @ManyToOne
-    @JoinColumn(name = "comment_id", unique = false, referencedColumnName = "id")
-    private Comment comment;
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Comment> comment;
 
     @Column
     private int commentsCount;
@@ -51,6 +54,9 @@ public class Post {
     
     @Column
     private Date updatedAt;
+
+    @Column
+    private Date deletedAt;
 
     public Post() {
     }
