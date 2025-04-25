@@ -31,8 +31,9 @@ public class RelationShip {
     @JoinColumn(name = "following_id", unique = false, referencedColumnName = "id")
     private User following;
 
-    @Column
-    private long status;
+    @ManyToOne
+    @JoinColumn(name = "status_id", unique = false, referencedColumnName = "id")
+    private RelationStatus status;
     
     @Column
     private Date createdAt;
