@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -79,16 +81,16 @@ public class PostController {
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "409", description = "Internal Unhandle Exception", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class)))
     })
-    @PostMapping(value = "/posting", consumes = "multipart/form-data")
+    @PostMapping(value = "/posting", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> posting(
-            @RequestParam("file") MultipartFile file,
-            @RequestBody NewPost newPost,
+            @RequestPart("file") MultipartFile file,
+            @RequestPart NewPost newPost,
             @RequestHeader("Authorization") String token) {
 
         /*
         TODO: Repair the upload the file to the server
                 ERORR: Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content-Type 'multipart/form-data;boundary=--------------------------760945403799146303952740;charset=UTF-8' is not supported]
-         */
+        */
 
         long userId = jwtUtil.getUserId(token); // * Extract user ID from the JWT token
 
