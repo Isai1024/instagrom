@@ -87,11 +87,6 @@ public class PostController {
             @RequestPart NewPost newPost,
             @RequestHeader("Authorization") String token) {
 
-        /*
-        TODO: Repair the upload the file to the server
-                ERORR: Resolved [org.springframework.web.HttpMediaTypeNotSupportedException: Content-Type 'multipart/form-data;boundary=--------------------------760945403799146303952740;charset=UTF-8' is not supported]
-        */
-
         long userId = jwtUtil.getUserId(token); // * Extract user ID from the JWT token
 
         try {
