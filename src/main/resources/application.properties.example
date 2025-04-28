@@ -1,0 +1,22 @@
+spring.application.name=instagrom
+
+# Database settings
+spring.datasource.url = jdbc:postgresql://:/instagrom
+spring.datasource.username = 
+spring.datasource.password = 
+spring.datasource.driver-class-name = org.postgresql.Driver
+
+# Hibernate settings
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto = update
+
+# JWT settings
+jwt_secret=my-jwt-secrets
+jwt_issuer=com.instagrom
+
+# File upload settings
+file.upload-dir=src/main/resources/uploads
+server.servlet.encoding.enabled=true
+spring.servlet.multipart.enabled=true
+server.servlet.encoding.charset=UTF-8
+spring.servlet.multipart.resolve-lazily=true
