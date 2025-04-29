@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.instagrom.instagrom.config.JWTUtil;
 import com.instagrom.instagrom.dto.GeneralResponse;
 import com.instagrom.instagrom.dto.post.NewPost;
+import com.instagrom.instagrom.dto.post.PostResponse;
 import com.instagrom.instagrom.dto.post.UpdatePost;
 import com.instagrom.instagrom.services.Post.PostService;
 import com.smattme.requestvalidator.RequestValidator;
@@ -182,7 +183,9 @@ public class PostController {
         try {
             var response = postService.getPost(id); // * Retrieve the post using the PostService
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            PostResponse postResponse = new PostResponse(response); // * Create a PostResponse object from the retrieved post
+            
+            return new ResponseEntity<>(postResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             var errorData = new HashMap<String, Object>();
