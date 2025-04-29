@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "chats")
-public class Chat {
+public class Chat { // * Relations between users and messages
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

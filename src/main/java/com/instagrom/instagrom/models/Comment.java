@@ -1,6 +1,6 @@
 package com.instagrom.instagrom.models;
 
-import java.sql.Date;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +39,9 @@ public class Comment {
     
     @Column
     private Date updatedAt;
+
+    @Column
+    private Date deletedAt;
 
     public Comment() {
     }

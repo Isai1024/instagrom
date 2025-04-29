@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "relation_status")
-public class RelationStatus {
+public class RelationStatus { // * CATALOG OF RELATION STATUS * //
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

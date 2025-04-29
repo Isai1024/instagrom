@@ -1,7 +1,5 @@
 package com.instagrom.instagrom.models;
 
-
-
 import java.util.Date;
 
 import jakarta.persistence.Column;

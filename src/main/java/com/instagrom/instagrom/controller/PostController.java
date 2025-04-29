@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +31,6 @@ import com.instagrom.instagrom.config.JWTUtil;
 import com.instagrom.instagrom.dto.GeneralResponse;
 import com.instagrom.instagrom.dto.post.NewPost;
 import com.instagrom.instagrom.dto.post.UpdatePost;
-import com.instagrom.instagrom.models.Post;
 import com.instagrom.instagrom.services.Post.PostService;
 import com.smattme.requestvalidator.RequestValidator;
 
@@ -47,8 +43,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RestController
 @RequestMapping("/api/v1/post")
 public class PostController {
-
-    private final Logger logger = LoggerFactory.getLogger(PostController.class);
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -75,7 +69,7 @@ public class PostController {
                 "fileExtension", file.getContentType());
     }
 
-    @Operation(summary = "Create a new post", description = "Creates a new post with an image and caption")
+    @Operation(summary = "Create a new post", description = "Create a new post with an image and caption")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The post was created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
@@ -107,14 +101,14 @@ public class PostController {
 
         } catch (Exception e) {
             var errorData = new HashMap<String, Object>();
-            errorData.put("error", "Error creating post: " + e.getMessage());
+            errorData.put("error", e.getMessage());
             return ResponseEntity.unprocessableEntity().body(errorData);
         }
     }
 
-    @Operation(summary = "Create a new post", description = "Creates a new post with an image and caption")
+    @Operation(summary = "Update a post", description = "Update a the post's caption")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The post was created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "200", description = "The post was updated", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "409", description = "Internal Unhandle Exception", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class)))
     })
@@ -147,7 +141,7 @@ public class PostController {
 
         } catch (Exception e) {
             var errorData = new HashMap<String, Object>();
-            errorData.put("error", "Error updating post: " + e.getMessage());
+            errorData.put("error", e.getMessage());
             return ResponseEntity.unprocessableEntity().body(errorData);
         }
     }
@@ -192,7 +186,7 @@ public class PostController {
 
         } catch (Exception e) {
             var errorData = new HashMap<String, Object>();
-            errorData.put("error", "Error retrieving post: " + e.getMessage());
+            errorData.put("error", e.getMessage());
             return ResponseEntity.unprocessableEntity().body(errorData);
         }
     }
