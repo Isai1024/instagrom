@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,24 @@ public class MockPostService implements PostService {
             return postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post not found"));
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving post: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Post> getPostsByUserId(long userId) {
+        try {
+            return postRepository.findByUserId(userId);
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving posts by user ID: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public List<Post> getPosts() {
+        try {
+            return postRepository.findAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Error retrieving posts: " + e.getMessage(), e);
         }
     }
     

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.instagrom.instagrom.dto.GeneralResponse;
 
 @ControllerAdvice
@@ -39,6 +40,17 @@ public class ExceptionController {
 
         var responseData = new GeneralResponse<>();
         responseData.setTitle("Signature invalid.");
+        responseData.setMessage(ex.getMessage());
+        
+        return ResponseEntity.status(401).body(responseData);
+
+    }
+
+    @ExceptionHandler(value = { TokenExpiredException.class })
+    public ResponseEntity<Object> handleTokenExpiredException(Exception ex) {
+
+        var responseData = new GeneralResponse<>();
+        responseData.setTitle("Token expired.");
         responseData.setMessage(ex.getMessage());
         
         return ResponseEntity.status(401).body(responseData);

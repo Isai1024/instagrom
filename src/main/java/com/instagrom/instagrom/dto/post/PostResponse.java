@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.instagrom.instagrom.dto.comment.CommentResponse;
+import com.instagrom.instagrom.dto.user.UserResponse;
 import com.instagrom.instagrom.models.Comment;
 import com.instagrom.instagrom.models.Post;
 import com.instagrom.instagrom.models.User;
@@ -41,6 +42,10 @@ public class PostResponse {
     }
 
     public PostResponse() {}
+
+    public UserResponse getUser() {
+        return new UserResponse(user);
+    }
 
     public List<CommentResponse> getComments() {
         List<CommentResponse> commentResponses = new ArrayList<>();

@@ -194,4 +194,55 @@ public class PostController {
         }
     }
 
+    @Operation(summary = "Get all posts", description = "Retrieves a posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The posts was retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class)))
+    })
+    @GetMapping("")
+    public ResponseEntity<Object> getPosts() {
+        try {
+            var response = postService.getPosts(); // * Retrieve the post using the PostService
+
+            List<PostResponse> postResponse = response.stream()
+                    .map(PostResponse::new)
+                    .toList(); // * Create a PostResponse object from the retrieved post
+
+            return new ResponseEntity<>(postResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            var errorData = new HashMap<String, Object>();
+            errorData.put("error", e.getMessage());
+            return ResponseEntity.unprocessableEntity().body(errorData);
+        }
+    }
+
+    @Operation(summary = "Get all posts by userId", description = "Retrieves all posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The posts was retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class)))
+    })
+    @GetMapping("/user")
+    public ResponseEntity<Object> getPostsByUser(
+        @RequestHeader("Authorization") String token
+    ) {
+
+        long userId = jwtUtil.getUserId(token); // * Extract user ID from the JWT token
+
+        try {
+            var response = postService.getPostsByUserId(userId); // * Retrieve the post using the PostService
+
+            List<PostResponse> postResponse = response.stream()
+                    .map(PostResponse::new)
+                    .toList(); // * Create a PostResponse object from the retrieved post
+                    
+            return new ResponseEntity<>(postResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            var errorData = new HashMap<String, Object>();
+            errorData.put("error", e.getMessage());
+            return ResponseEntity.unprocessableEntity().body(errorData);
+        }
+    }
+
 }
