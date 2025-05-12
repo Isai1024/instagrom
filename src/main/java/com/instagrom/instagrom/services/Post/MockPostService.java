@@ -118,5 +118,18 @@ public class MockPostService implements PostService {
             throw new RuntimeException("Error retrieving posts: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public long likePost(long postId, long userId) {
+
+        /**
+        * * TODO Auto-generated method stub
+        * FUNCIONALIDAD DE LIKE
+        * RESPONSE PARA LIKESPOST
+        */
+
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'likePost'");
+    }
     
 }

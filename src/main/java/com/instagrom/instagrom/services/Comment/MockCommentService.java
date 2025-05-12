@@ -41,6 +41,11 @@ public class MockCommentService implements CommentService{
             Instant instant = LocalDateTime.now().toInstant(ZoneOffset.of("-06:00"));
             Date CreationDate = Date.from(instant);
 
+            // increment the comments count for the post
+            post.setCommentsCount(post.getCommentsCount() + 1);
+            postRepository.saveAndFlush(post);
+
+            // Create a new comment object and set its properties
             Comment newComment = new Comment();
             newComment.setText(comment.getText());
             newComment.setUser(user);
@@ -60,11 +65,16 @@ public class MockCommentService implements CommentService{
     @Override
     public long deleteComment(long commentId) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("Comment no found."));
+        Post post = comment.getPost();
 
         try{
 
             Instant instant = LocalDateTime.now().toInstant(ZoneOffset.of("-06:00"));
             Date deleteDate = Date.from(instant);
+
+            // decrement the comments count for the post
+            post.setCommentsCount(post.getCommentsCount() - 1);
+            postRepository.saveAndFlush(post);
 
             comment.setDeletedAt(deleteDate);
 

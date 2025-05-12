@@ -57,4 +57,13 @@ public interface PostService {
      */
     List<Post> getPosts();
 
+    /**
+     * Likes a post.
+     * 
+     * @param postId
+     * @param userId
+     * @return the ID of the post that was liked
+     */
+    long likePost(long postId, long userId);
+
 }

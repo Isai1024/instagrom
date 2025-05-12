@@ -245,4 +245,35 @@ public class PostController {
         }
     }
 
+    @Operation(summary = "Get all posts by userId", description = "Retrieves all posts")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The posts was retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class)))
+    })
+    @PutMapping("/like/{postId}")	
+    public ResponseEntity<Object> updateLikePost(
+        @PathVariable("postId") long postId,
+        @RequestHeader("Authorization") String token
+    ) {
+
+        long userId = jwtUtil.getUserId(token); // * Extract user ID from the JWT token
+
+        try {
+            long id = postService.likePost(postId, userId); // * Retrieve the post using the PostService
+
+            // * return the postId
+            var responseData = new GeneralResponse<Long>();
+            responseData.setTitle("The post was liked");
+            responseData.setMessage(String.format("The post was liked with id %s", id));
+            responseData.setData(postId);
+                    
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+
+        } catch (Exception e) {
+            var errorData = new HashMap<String, Object>();
+            errorData.put("error", e.getMessage());
+            return ResponseEntity.unprocessableEntity().body(errorData);
+        }
+    }
+    
 }
