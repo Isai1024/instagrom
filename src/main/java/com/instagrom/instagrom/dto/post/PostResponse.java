@@ -58,4 +58,12 @@ public class PostResponse {
         return commentResponses;
     }
 
+    public List<LikesResponse> getLikes() {
+        List<LikesResponse> likesResponses = new ArrayList<>();
+        for (LikesPost like : likes) {
+            likesResponses.add(new LikesResponse(like.getId(), new UserResponse(like.getUser()), like.isLiked()));
+        }
+        return likesResponses;
+    }
+
 }

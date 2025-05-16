@@ -8,6 +8,8 @@ import com.instagrom.instagrom.models.Post;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findByUserId(long userId);
+    List<Post> findByUserIdOrderById(long userId);
+
+    List<Post> findAllByOrderById();
 
 }

@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.instagrom.instagrom.dto.post.NewPost;
 import com.instagrom.instagrom.dto.post.UpdatePost;
+import com.instagrom.instagrom.models.LikesPost;
 import com.instagrom.instagrom.models.Post;
 import com.instagrom.instagrom.models.User;
+import com.instagrom.instagrom.repository.LikesPostRepository;
 import com.instagrom.instagrom.repository.PostRepository;
 import com.instagrom.instagrom.repository.UserRepository;
 
@@ -25,6 +27,9 @@ public class MockPostService implements PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LikesPostRepository likesPostRepository;
 
     @Override
     public long createPost(NewPost newPost, long userId) {
@@ -45,7 +50,7 @@ public class MockPostService implements PostService {
             post.setCreatedAt(CreationDate);
             post.setUpdatedAt(CreationDate);
 
-            postRepository.saveAndFlush(post); 
+            postRepository.saveAndFlush(post);
 
             return post.getId();
 
@@ -65,7 +70,7 @@ public class MockPostService implements PostService {
             post.setCaption(updatePost.getCaption());
             post.setUpdatedAt(updateDate);
 
-            postRepository.saveAndFlush(post); 
+            postRepository.saveAndFlush(post);
 
             return post.getId();
 
@@ -83,7 +88,7 @@ public class MockPostService implements PostService {
             Date deleteDate = Date.from(instant);
 
             post.setDeletedAt(deleteDate);
-            postRepository.saveAndFlush(post); 
+            postRepository.saveAndFlush(post);
 
             return post.getId();
 
@@ -104,7 +109,7 @@ public class MockPostService implements PostService {
     @Override
     public List<Post> getPostsByUserId(long userId) {
         try {
-            return postRepository.findByUserId(userId);
+            return postRepository.findByUserIdOrderById(userId);
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving posts by user ID: " + e.getMessage(), e);
         }
@@ -113,23 +118,45 @@ public class MockPostService implements PostService {
     @Override
     public List<Post> getPosts() {
         try {
-            return postRepository.findAll();
+            return postRepository.findAllByOrderById();
         } catch (Exception e) {
             throw new RuntimeException("Error retrieving posts: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public long likePost(long postId, long userId) {
+    public boolean likePost(long postId, long userId) {
 
-        /**
-        * * TODO Auto-generated method stub
-        * FUNCIONALIDAD DE LIKE
-        * RESPONSE PARA LIKESPOST
-        */
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException("Post not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'likePost'");
+        try {
+            
+            LikesPost likePost = likesPostRepository.findByPostIdAndUserId(postId, userId);
+            if (likePost != null) {
+                // If the user already liked the post, remove the like
+                likesPostRepository.delete(likePost);
+                post.setLikesCount(post.getLikesCount() - 1);
+                postRepository.saveAndFlush(post);
+                return false; // Return false to indicate the post was unliked
+            }else {
+                // If the user has not liked the post, add a new like
+                likePost = new LikesPost();
+            }
+
+            likePost.setPost(post);
+            likePost.setUser(user);
+            likePost.setLiked(true);
+
+            post.setLikesCount(post.getLikesCount() + 1);
+
+            likesPostRepository.saveAndFlush(likePost);
+
+            return true; // Return true to indicate the post was liked
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error liking post: " + e.getMessage(), e);
+        }
     }
-    
+
 }

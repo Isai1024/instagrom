@@ -64,6 +64,6 @@ public interface PostService {
      * @param userId
      * @return the ID of the post that was liked
      */
-    long likePost(long postId, long userId);
+    boolean likePost(long postId, long userId);
 
 }
