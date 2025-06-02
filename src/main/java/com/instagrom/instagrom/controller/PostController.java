@@ -1,6 +1,7 @@
 package com.instagrom.instagrom.controller;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +13,8 @@ import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,8 +57,9 @@ public class PostController {
     @Autowired
     private JWTUtil jwtUtil;
 
+    @SuppressWarnings("null")
     private Map<String, Object> saveImage(MultipartFile file) throws IOException {
-        
+
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -65,9 +69,11 @@ public class PostController {
         Path filePath = uploadPath.resolve(fileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+        String[] fileNameSplit = fileName.split("\\.");
+
         return Map.of(
-                "fileName", fileName,
-                "fileExtension", file.getContentType());
+                "fileName", fileNameSplit[0],
+                "fileExtension", fileNameSplit[1]);
     }
 
     @Operation(summary = "Create a new post", description = "Create a new post with an image and caption")
@@ -172,7 +178,7 @@ public class PostController {
         }
 
     }
-    
+
     @Operation(summary = "Get post by ID", description = "Retrieves a post by its ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "The post was retrieved successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
@@ -183,8 +189,9 @@ public class PostController {
         try {
             var response = postService.getPost(id); // * Retrieve the post using the PostService
 
-            PostResponse postResponse = new PostResponse(response); // * Create a PostResponse object from the retrieved post
-            
+            PostResponse postResponse = new PostResponse(response); // * Create a PostResponse object from the retrieved
+                                                                    // post
+
             return new ResponseEntity<>(postResponse, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -224,8 +231,7 @@ public class PostController {
     })
     @GetMapping("/user")
     public ResponseEntity<Object> getPostsByUser(
-        @RequestHeader("Authorization") String token
-    ) {
+            @RequestHeader("Authorization") String token) {
 
         long userId = jwtUtil.getUserId(token); // * Extract user ID from the JWT token
 
@@ -235,7 +241,7 @@ public class PostController {
             List<PostResponse> postResponse = response.stream()
                     .map(PostResponse::new)
                     .toList(); // * Create a PostResponse object from the retrieved post
-                    
+
             return new ResponseEntity<>(postResponse, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -250,11 +256,10 @@ public class PostController {
             @ApiResponse(responseCode = "200", description = "The posts was liked successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class))),
             @ApiResponse(responseCode = "404", description = "Post not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralResponse.class)))
     })
-    @PutMapping("/like/{postId}")	
+    @PutMapping("/like/{postId}")
     public ResponseEntity<Object> updateLikePost(
-        @PathVariable("postId") long postId,
-        @RequestHeader("Authorization") String token
-    ) {
+            @PathVariable("postId") long postId,
+            @RequestHeader("Authorization") String token) {
 
         long userId = jwtUtil.getUserId(token); // * Extract user ID from the JWT token
 
@@ -268,7 +273,7 @@ public class PostController {
             responseData.setTitle(String.format("The post was %s", msgLiked));
             responseData.setMessage(String.format("The post was %s", msgLiked));
             responseData.setData(postId);
-            
+
             return new ResponseEntity<>(responseData, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -277,5 +282,23 @@ public class PostController {
             return ResponseEntity.unprocessableEntity().body(errorData);
         }
     }
-    
+
+    @GetMapping("/images")
+    public ResponseEntity<Resource> getImage() {
+        try {
+            Path filePath = Paths.get(uploadDir).resolve("portal-4.jpg");
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }
